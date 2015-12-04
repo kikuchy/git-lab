@@ -13,13 +13,15 @@ func MergeRequestDelegate(settings *GitLabSettings, c *cli.Context) {
 	gl := gitlab.NewClient(nil, settings.Token)
 	e := gl.SetBaseURL(settings.EndPoint)
 	if e != nil {
-		log.Fatal(e)
+		log.Println(e)
+		return
 	}
 
 	id := url.QueryEscape(settings.ProjectPath)
 	project, _, err := gl.Projects.GetProject(id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	projId := *project.ID
 	showMergeRequests(gl.MergeRequests, projId, c.Bool("branch"))
@@ -28,7 +30,8 @@ func MergeRequestDelegate(settings *GitLabSettings, c *cli.Context) {
 func showMergeRequests(mrService *gitlab.MergeRequestsService, projectID interface{}, beShowBranch bool) error {
 	mrs, _, err := mrService.ListMergeRequests(projectID, &gitlab.ListMergeRequestsOptions{State: "opened"})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	for _, mr := range mrs {
 		if beShowBranch {

@@ -1,8 +1,7 @@
 package main
 
 import (
-	//"fmt"
-	"log"
+	"errors"
 	"os/exec"
 	"strings"
 )
@@ -13,41 +12,53 @@ type GitLabSettings struct {
 	ProjectPath string
 }
 
-func CollectGitLabSettings() *GitLabSettings {
+func CollectGitLabSettings() (*GitLabSettings, error) {
 	configs, err := getGitConfig()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
+	}
+	ep, err := getEndPoint(configs)
+	if err != nil {
+		return nil, err
+	}
+	token, err := getToken(configs)
+	if err != nil {
+		return nil, err
+	}
+	path, err := getProjectPath(configs)
+	if err != nil {
+		return nil, err
 	}
 	return &GitLabSettings{
-		EndPoint:    getEndPoint(configs),
-		Token:       getToken(configs),
-		ProjectPath: getProjectPath(configs),
-	}
+		EndPoint:    ep,
+		Token:       token,
+		ProjectPath: path,
+	}, nil
 }
 
-func getEndPoint(configs map[string]string) string {
+func getEndPoint(configs map[string]string) (string, error) {
 	gitlabUrl, found := configs["gitlab.url"]
 	if !found {
-		log.Fatal("gitlab URL is not found")
+		return "", errors.New("gitlab URL is not found")
 	}
 	gitlabUrl = strings.TrimRight(gitlabUrl, "/")
-	return gitlabUrl + "/api/v3/"
+	return gitlabUrl + "/api/v3/", nil
 }
 
-func getToken(configs map[string]string) string {
+func getToken(configs map[string]string) (string, error) {
 	gitlabToken, found := configs["gitlab.token"]
 	if !found {
-		log.Fatal("gitlab private token is not found.")
+		return "", errors.New("gitlab private token is not found.")
 	}
-	return gitlabToken
+	return gitlabToken, nil
 }
 
-func getProjectPath(configs map[string]string) string {
+func getProjectPath(configs map[string]string) (string, error) {
 	gitlabProjectFullPath, found := configs["gitlab.project"]
 	if !found {
-		log.Fatal("gitlab project path (NAMESPACE/PROJECT_NAME) is not found.")
+		return "", errors.New("gitlab project path (NAMESPACE/PROJECT_NAME) is not found.")
 	}
-	return gitlabProjectFullPath
+	return gitlabProjectFullPath, nil
 }
 
 func getGitConfig() (map[string]string, error) {

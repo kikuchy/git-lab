@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
+	"log"
 )
 
 var Commands = []cli.Command{
@@ -15,7 +16,11 @@ var Commands = []cli.Command{
 			},
 		},
 		Action: func(c *cli.Context) {
-			settings := CollectGitLabSettings()
+			settings, err := CollectGitLabSettings()
+			if err != nil {
+				log.Println(err)
+				return
+			}
 			MergeRequestDelegate(settings, c)
 		},
 	},
