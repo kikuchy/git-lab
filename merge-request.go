@@ -30,8 +30,7 @@ func showMergeRequests(mrService *gitlab.MergeRequestsService, projectID interfa
 	if err != nil {
 		log.Fatal(err)
 	}
-	for i := range mrs {
-		mr := mrs[i]
+	for _, mr := range mrs {
 		if beShowBranch {
 			fmt.Printf("#%d\t%s\t%s\n", mr.IID, mr.SourceBranch, mr.Title)
 		} else {

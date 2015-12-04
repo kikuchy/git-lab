@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./internal"
 	"github.com/codegangsta/cli"
 )
 
@@ -16,8 +15,8 @@ var Commands = []cli.Command{
 			},
 		},
 		Action: func(c *cli.Context) {
-			settings := internal.CollectGitLabSettings()
-			internal.MergeRequestDelegate(settings, c)
+			settings := CollectGitLabSettings()
+			MergeRequestDelegate(settings, c)
 		},
 	},
 }
