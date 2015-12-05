@@ -6,7 +6,6 @@ import (
 	"github.com/xanzy/go-gitlab"
 	"log"
 	"net/url"
-	"os/exec"
 )
 
 func MergeRequestDelegate(settings *GitLabSettings, c *cli.Context) {
@@ -41,9 +40,4 @@ func showMergeRequests(mrService *gitlab.MergeRequestsService, projectID interfa
 		}
 	}
 	return nil
-}
-
-func checkoutMergeRequestBranch(mr *gitlab.MergeRequest) {
-	fmt.Println("checking out ", mr.TargetBranch)
-	exec.Command("git", "checkout", mr.TargetBranch)
 }
